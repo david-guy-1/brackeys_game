@@ -3,7 +3,7 @@ import { animation } from "../animations";
 import {game} from "./game";
 
 import star from "./star_anim";
-import { anim_fn_type, draw_fn_type, sound_fn_type } from "../interfaces";
+import { anim_fn_type, display_type, draw_fn_type, sound_fn_type } from "../interfaces";
 import { events } from "../EventManager";
 import { toggleMute } from "../Sound";
 import { useContext } from "react";
@@ -23,6 +23,7 @@ export function reset_fn(){
 }
 
 export function add_event_listeners(g : game) {
+    console.log("added listeners");
     events["mousemove mover" ] = [function(e : MouseEvent, g : game){
         g.target_x = e.offsetX;
         g.target_y = e.offsetY; 

@@ -8,6 +8,7 @@ export let events : Record<string, eventCall> = {};
 export let globalStore : Record<string, any> = {};
 
 export function call_mousemove(e : MouseEvent){
+ //   console.log(events);
     for(let item of Object.keys(events)){
         if(item.indexOf("mousemove") != -1){
             let [fn, params] = events[item];

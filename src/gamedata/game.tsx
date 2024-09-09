@@ -1,4 +1,4 @@
-import { game_interface } from "../interfaces";
+import { game_interface, gamedata } from "../interfaces";
 import {dist, moveTo} from "../canvasDrawing";
 import _ from "lodash";
 
@@ -9,6 +9,7 @@ export class game implements game_interface {
     y:number;
     target_x:number;
     target_y:number;
+    serve_delay : number = 100; 
     customers :point[] = []; 
     has_drink = false;
     drink_location : point = [400, 400]; 
@@ -32,7 +33,7 @@ export class game implements game_interface {
             events.push('got drink');
         }
         // randomly spawn customers on left side
-        if(this.time % 100 == 20){
+        if(this.time % this.serve_delay == 0){
             this.customers.push([Math.random() * 200+100, Math.random() * 600])
         }
         // if close to customer and has drink, get rid of drink
@@ -61,3 +62,5 @@ export function make_game(){
     let g = new game(200, 200, 200, 200);
     return g; 
 }
+
+

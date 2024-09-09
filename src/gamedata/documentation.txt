@@ -4,6 +4,8 @@ game.tsx
 GameFunctions.ts
 App.tsx
 
+see interfaces.d.ts for their signatures 
+
 game just needs to define two things: a game class, and a make_game function that takes no args and outputs a game. 
 
 the game needs to define a tick function with no args, that returns a list of things that happened during that tick.

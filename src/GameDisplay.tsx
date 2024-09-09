@@ -5,13 +5,12 @@ import _ from "lodash";
 import { clear, draw } from "./process_draws";
 import { animation, update_and_draw } from "./animations";
 import {change, toggleMute, get, getMuted, play} from "./Sound"; 
-import { draw_fn, anim_fn, sound_fn, add_event_listeners, button_click, prop_commands, display, reset_fn } from "./gamedata/GameFunctions";
+
 import React from "react";
-import { events_type } from "./interfaces";
+import { events_type, gamedata } from "./interfaces";
 
 
 
-let g : game | undefined = undefined;
 let interval : number = -1; 
 let last_tick : number = Date.now(); 
 
@@ -19,18 +18,22 @@ const FPS = 60;
 
 let anim_lst : animation[] = []; 
 
-async function reset(){
 
-    last_tick = Date.now();
-    anim_lst = [];
-    clearInterval(interval);
-    interval = -1; 
-    reset_fn(); 
-    g = undefined;
-    console.log("g cleared");
-}
+function GameDisplay(props : gamedata){
+    let {g ,draw_fn , anim_fn , sound_fn , add_event_listeners , button_click , prop_commands , display , reset_fn  , prop_fns}  = props;
+    if(g == undefined){
+        throw "no game found"; 
+    }
+        
+    async function reset(){
 
-function GameDisplay(props : any){
+        last_tick = Date.now();
+        anim_lst = [];
+        clearInterval(interval);
+        interval = -1; 
+        reset_fn(); 
+        console.log("g cleared");
+    }
     console.log("refreshed");
     const [r, refresh] = useState<boolean>(false);
     let refs : Record<string, React.RefObject<HTMLCanvasElement> > = {}; 
@@ -45,17 +48,7 @@ function GameDisplay(props : any){
     useEffect(function(){
         // componentDidMount;
         console.log("loading game")
-        if(g == undefined){
-
-            // create a Game object
-            g = make_game(); 
-
-            // event listener
-
-            add_event_listeners(g)
-
-
-        }
+        add_event_listeners(g);
         // clear sound
         if(get() != undefined){
             change(undefined);
@@ -63,7 +56,6 @@ function GameDisplay(props : any){
         
         // game loop
         if(interval == -1) {  
-            
             last_tick = Date.now() //
             interval = setInterval(function(){
                 if(g == undefined){
@@ -82,8 +74,8 @@ function GameDisplay(props : any){
                             reset();
                             refresh(!r);
                         }
-                        if(props[s] != undefined){
-                            props[s](g, t)
+                        if(prop_fns[s] != undefined){
+                            prop_fns[s](g, t)
                         }
                     }
                     last_tick += 1000/FPS 
@@ -121,7 +113,7 @@ function GameDisplay(props : any){
     },[])
 
     const button_click_disp = function(s : string){
-        let lst  = button_click(s, g as game);
+        let lst  = button_click(g, s);
         for(let [s,t] of lst){
             if(s == "rerender"){
                 refresh(!r);
@@ -130,8 +122,8 @@ function GameDisplay(props : any){
                 reset();
                 refresh(!r);
             }
-            if(props[s] != undefined){
-                props[s](g, t)
+            if(prop_fns[s] != undefined){
+                prop_fns[s](g, t)
             }
         }
     }

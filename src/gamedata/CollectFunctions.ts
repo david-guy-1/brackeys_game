@@ -1,13 +1,13 @@
 import _ from "lodash";
 import { animation } from "../animations";
-import {game} from "./game";
+import {game} from "./collect";
 
 import star from "./star_anim";
 import { anim_fn_type, display_type, draw_fn_type, gamedata, sound_fn_type } from "../interfaces";
 import { events } from "../EventManager";
 import { toggleMute } from "../Sound";
 import { useContext } from "react";
-import { drawCircle, drawText } from "../canvasDrawing";
+import { drawCircle, drawRectangle, drawText } from "../canvasDrawing";
 
 
 type event = number[] 
@@ -35,18 +35,16 @@ let orig_disp = ` {"canvas" : [["topleft", [0, 0, 50, 50]], ["display",[ 50, 10,
 
 
  const  draw_fn : draw_fn_type = function(g :game, e : event[], canvas : string = "") {
-
     let draws : draw_command[] = [];
     if(canvas == "display"){
+        //player
         draws.push({type:"drawImage", x : g.x-20, y : g.y-20, img : "player.png"});
-        for(let customer of g.customers){
-            draws.push({type:"drawImage", x : customer[0]-20, y : customer[1]-20, img : "person.png"});
-        }
-        if(g.has_drink){
-            draws.push({type:"drawImage", x : g.x-20, y : g.y-20, img : "drink.png"});
-        }
-        draws.push({type:"drawCircle", x : g.drink_location[0],y :g.drink_location[1], r:3, fill:true, color:'red'})
-        
+        // res
+        for(let res of g.valid_res()){
+            draws.push({type:"drawImage", x : res[0]-20, y : res[1]-20, img : "res.png"});
+        }       
+        //timer
+        draws.push({type:"drawRectangle", tlx:0, tly:0, brx : 600 * (g.time/g.limit), bry:10, fill:true,color:"red"}) 
     }
     if(canvas == "topleft"){
         draws.push({type:"drawText", x : 10, y : 30, text_ : g.served.toString()})
@@ -71,13 +69,8 @@ let orig_disp = ` {"canvas" : [["topleft", [0, 0, 50, 50]], ["display",[ 50, 10,
 
 
  function prop_commands(g : game) : [string, any][]{
-    if(g.served == 4){
-        g.served = 0; 
-        g.serve_delay -= 20;
-        if(g.serve_delay < 0){
-            g.serve_delay  = 10;
-        } 
-        return [["win", 30123]]
+    if(g.time > g.limit){
+        return [["win", []]]
     }
     return []
 }
