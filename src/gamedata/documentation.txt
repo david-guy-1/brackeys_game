@@ -1,0 +1,37 @@
+gamedata must contain at least : 
+
+game.tsx 
+GameFunctions.ts
+App.tsx
+
+see interfaces.d.ts for their signatures 
+
+game just needs to define two things: a game class, and a make_game function that takes no args and outputs a game. 
+
+the game needs to define a tick function with no args, that returns a list of things that happened during that tick.
+
+App is the first thing that gets rendered, and it should render ../GameDisplay.tsx  and also call set_events() (defined in EventManager)
+
+GameFunctions must define the following functions:
+
+draw_fn, anim_fn, sound_fn, add_event_listeners, button_click, prop_commands, display, reset_fn
+
+GameDisplay first calls make_game() to make a game, then calls add_event_listeners(g) 
+
+It then runs the following event loop:
+
+    for every frame that needs to happen:
+
+        call g.tick - no args 
+
+        call the prop_commands(game), which returns a list of prop functions (functions passed in as props to GameDisplay). Each element in the list is a pair, the first one specifying the name of the function, and the second one is the argument. the prop function takes in two arguments: first is the game, second is the argument specified in the list. Special cases: if the first element is "rerender" , the game is re-rendered, if it's "reset", reset() is called and the game is re-rendered
+
+    call sound_fn(game, list of events) that outputs a pair [newsound : string, playsounds : string[]], first is the new BGM, second is a list of sound effects.
+
+    clears each canvas 
+
+    for each canvas, calls draw_fn(game, event list, canvas name), which returns a list of draw_command , and draws them on canvas
+
+    calls anim_fn(g, event list), which returns a list of animations, then updates and draws them.
+
+When a button is clicked, button_click(name of button, game) is called, it returns the same list as prop_commands: a list of functions to call, and arguments  
