@@ -57,8 +57,9 @@ let orig_disp = ` {"canvas" : [["topleft", [0, 0, 50, 50]], ["display",[ 50, 10,
             if(helper.has_drink){
                 draws.push({type:"drawImage", x : x-20, y : y-20, img : "drink.png"});
             }
-   
         }
+        //bar at top;
+        draws.push({type:"drawRectangle", tlx:0, tly:0, brx : 600 * (g.time/g.limit), bry:10, fill:true,color:"red"}) 
     }
     
     if(canvas == "topleft"){
@@ -84,13 +85,8 @@ let orig_disp = ` {"canvas" : [["topleft", [0, 0, 50, 50]], ["display",[ 50, 10,
 
 
  function prop_commands(g : game) : [string, any][]{
-    if(g.served == 4){
-        g.served = 0; 
-        g.serve_delay -= 20;
-        if(g.serve_delay < 0){
-            g.serve_delay  = 10;
-        } 
-        return [["win", 30123]]
+    if(g.time >= g.limit){
+        return [["win", 0]];
     }
     return []
 }

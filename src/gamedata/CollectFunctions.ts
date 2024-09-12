@@ -44,7 +44,13 @@ let orig_disp = ` {"canvas" : [["topleft", [0, 0, 50, 50]], ["display",[ 50, 10,
             draws.push({type:"drawImage", x : res[0]-20, y : res[1]-20, img : "res.png"});
         }       
         //timer
-        draws.push({type:"drawRectangle", tlx:0, tly:0, brx : 600 * (g.time/g.limit), bry:10, fill:true,color:"red"}) 
+        draws.push({type:"drawRectangle", tlx:0, tly:0, brx : 600 * (g.time/g.limit), bry:10, fill:true,color:"red"}) ;
+        //wolves
+        for(let wolf of g.wolves){
+            let [x,y] = wolf.pos;
+            draws.push({type:"drawImage", x : x-20, y : y-20, img:"wolf.png"});
+
+        }
     }
     if(canvas == "topleft"){
         draws.push({type:"drawText", x : 10, y : 30, text_ : g.served.toString()})
@@ -71,6 +77,9 @@ let orig_disp = ` {"canvas" : [["topleft", [0, 0, 50, 50]], ["display",[ 50, 10,
  function prop_commands(g : game) : [string, any][]{
     if(g.time > g.limit){
         return [["win", []]]
+    }
+    if(_.every(g.collect)){
+        return [["win", []]]; 
     }
     return []
 }

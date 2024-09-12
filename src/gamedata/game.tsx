@@ -43,15 +43,15 @@ export class game implements game_interface {
     helpers : helper[] = []; 
     has_drink = false;
     drink_location : point = [400, 400]; 
-
+    limit : number; 
     time = 0;
     served = 0; 
-    constructor(x : number,y : number,target_x : number,target_y : number){
+    constructor(x : number,y : number,target_x : number,target_y : number, limit : number){
         this.x=x;
         this.y=y;
         this.target_x=target_x;
         this.target_y=target_y;
-       
+        this.limit = limit;
     }
     tick(){
         this.time++; 
@@ -118,7 +118,7 @@ export function make_game(){
     for(let i=0; i < 10; i++){
         lst.push([Math.random() * 500, Math.random() * 500])
     }
-    let g = new game(200, 200, 200, 200);
+    let g = new game(200, 200, 200, 200, 0);
     return g; 
 }
 
