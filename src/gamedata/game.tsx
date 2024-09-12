@@ -1,8 +1,37 @@
 import { game_interface, gamedata } from "../interfaces";
-import {dist, moveTo} from "../canvasDrawing";
+import {choice, dist, moveTo} from "../canvasDrawing";
 import _ from "lodash";
 
 type point = [number, number]
+
+class customer {
+    x:number;
+    y:number;
+    t : number
+    active : boolean = true; 
+    constructor(x : number,y : number,t : number){
+        this.x=x;
+        this.y=y;
+        this.t = t; 
+    }
+    
+}
+
+export class helper {
+    x:number;
+    y:number;
+    target:customer | undefined;
+    speed:number;  
+    has_drink : boolean; 
+
+    constructor(x : number,y : number,speed : number,target ?: customer){
+        this.x=x;
+        this.y=y;
+        this.target=target;
+        this.speed=speed;
+        this.has_drink = false; 
+    }
+}
 
 export class game implements game_interface {
     x:number;
@@ -10,7 +39,8 @@ export class game implements game_interface {
     target_x:number;
     target_y:number;
     serve_delay : number = 100; 
-    customers :point[] = []; 
+    customers :customer[] = []; 
+    helpers : helper[] = []; 
     has_drink = false;
     drink_location : point = [400, 400]; 
 
@@ -34,21 +64,50 @@ export class game implements game_interface {
         }
         // randomly spawn customers on left side
         if(this.time % this.serve_delay == 0){
-            this.customers.push([Math.random() * 200+100, Math.random() * 600])
+            this.customers.push(new customer(Math.random() * 200+100, Math.random() * 600, this.time))
         }
         // if close to customer and has drink, get rid of drink
         if(this.has_drink){
             for(let customer of this.customers){
-                if(dist([this.x, this.y], customer) < 20){
+                if(dist([this.x, this.y], [customer.x, customer.y]) < 20){
                     this.has_drink = false; 
-                    customer[0] = -99; 
-                    customer[1] = -99;            
+                    customer.active = false;          
                     events.push('served customer');
                     this.served ++; 
                 }
             }
         }
-        this.customers = this.customers.filter(([x,y]) => x > 0 && y > 0); 
+        // helpers logic
+        for(let helper of this.helpers){
+            let target : point = [helper.x, helper.y]
+            if(!helper.has_drink){
+                target = this.drink_location;
+            } else {
+                // choose a customer
+                if(helper.target && helper.target.active){
+                    target =[ helper.target.x, helper.target.y];
+                } else  { // no current target, choose one
+                    if(this.customers.length > 0){
+                        helper.target = choice(this.customers); 
+                    }
+                }
+            }
+
+            // close to drink
+            if(!helper.has_drink && dist([helper.x, helper.y], this.drink_location) < 10){
+                helper.has_drink = true;
+            }
+            if(helper.has_drink && helper.target && dist([helper.x, helper.y], [helper.target.x, helper.target.y]) < 10 ){
+                events.push("helper served customer");
+                helper.has_drink = false; 
+                helper.target.active = false;          
+                this.served ++; 
+            } 
+            // move towards target
+            [helper.x, helper.y] = moveTo([helper.x, helper.y], target, helper.speed); 
+
+        }
+        this.customers = this.customers.filter(c => c.active ); 
         return events; 
     }
 

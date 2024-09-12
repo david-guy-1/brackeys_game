@@ -32,6 +32,12 @@ export function dist(v : number[], w : number[]) : number {
 	return Math.sqrt(s);
 }
 
+export function choice<T>(lst : T[]) : T{
+	if(lst.length == 0){
+		throw "choice from empty list";
+	}
+	return lst[Math.floor(Math.random() * lst.length)]
+}
 
 export function normalize(v : number[], amt : number) : number[]{
 	noNaN(arguments as any as any[][]);

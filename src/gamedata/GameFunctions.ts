@@ -38,16 +38,29 @@ let orig_disp = ` {"canvas" : [["topleft", [0, 0, 50, 50]], ["display",[ 50, 10,
 
     let draws : draw_command[] = [];
     if(canvas == "display"){
+        //player
         draws.push({type:"drawImage", x : g.x-20, y : g.y-20, img : "player.png"});
-        for(let customer of g.customers){
-            draws.push({type:"drawImage", x : customer[0]-20, y : customer[1]-20, img : "person.png"});
-        }
         if(g.has_drink){
             draws.push({type:"drawImage", x : g.x-20, y : g.y-20, img : "drink.png"});
         }
+        //customers
+        for(let customer of g.customers){
+            draws.push({type:"drawImage", x : customer.x-20, y : customer.y-20, img : "person.png"});
+        }
+        //drink location
         draws.push({type:"drawCircle", x : g.drink_location[0],y :g.drink_location[1], r:3, fill:true, color:'red'})
-        
+
+        // helpers
+        for(let helper of g.helpers){
+            let [x,y]=[helper.x , helper.y]
+            draws.push({type:"drawImage", x : x-20, y : y-20, img : "helper.png"});
+            if(helper.has_drink){
+                draws.push({type:"drawImage", x : x-20, y : y-20, img : "drink.png"});
+            }
+   
+        }
     }
+    
     if(canvas == "topleft"){
         draws.push({type:"drawText", x : 10, y : 30, text_ : g.served.toString()})
     }

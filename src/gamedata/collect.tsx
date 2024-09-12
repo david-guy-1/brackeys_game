@@ -26,7 +26,7 @@ export class game implements game_interface {
         this.limit = limit; 
     }
     tick(){
-        console.log(this.res);
+        //console.log(this.res);
         this.time++; 
         [this.x, this.y]=moveTo([this.x,this.y], [this.target_x,this.target_y], 10); 
 
