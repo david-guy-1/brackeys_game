@@ -31,6 +31,7 @@ export class game implements game_interface {
     limit = 0;
     wolves : wolf[]; 
     last_hit_time = -99999; 
+    player_speed = 10; 
     constructor(x : number,y : number,target_x : number,target_y : number, res : point[], limit : number){
         this.x=x;
         this.y=y;
@@ -42,11 +43,11 @@ export class game implements game_interface {
         this.wolves= []; 
     }
     tick(){
-        console.log([this.time , this.last_hit_time, this.time - this.last_hit_time > 5] );
+       // console.log([this.time , this.last_hit_time, this.time - this.last_hit_time > 5] );
         this.time++; 
         //if not stunned by wolf
         if(this.time - this.last_hit_time > 30){
-            [this.x, this.y]=moveTo([this.x,this.y], [this.target_x,this.target_y], 10); 
+            [this.x, this.y]=moveTo([this.x,this.y], [this.target_x,this.target_y], this.player_speed); 
         }
         let events : number[] = []; 
         for(let i=0; i<this.res.length; i++){
@@ -57,6 +58,7 @@ export class game implements game_interface {
             if(dist(r, [this.x, this.y]) < 20){
                 events.push(i);
                 this.collect[i] = true; 
+                this.served ++ ;
             }
         }
         // for each wolf , move it towards a random point or the player; 
@@ -94,9 +96,9 @@ export class game implements game_interface {
     }
 }
 
-export function make_game(){
+export function make_game(count : number){
     let lst:[number, number][] = [];
-    for(let i=0; i < 10; i++){
+    for(let i=0; i <count; i++){
         lst.push([Math.random() * 500, Math.random() * 500])
     }
     let g = new game(200, 200, 200, 200, lst, 400);

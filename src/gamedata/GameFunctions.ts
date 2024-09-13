@@ -45,7 +45,13 @@ let orig_disp = ` {"canvas" : [["topleft", [0, 0, 50, 50]], ["display",[ 50, 10,
         }
         //customers
         for(let customer of g.customers){
-            draws.push({type:"drawImage", x : customer.x-20, y : customer.y-20, img : "person.png"});
+            let waiting_time = g.time -  customer.t ;
+            if(waiting_time > 50){
+                draws.push({type:"drawImage", x : customer.x-20, y : customer.y-20, img : "person_sad.png"});
+            }
+            else { 
+                draws.push({type:"drawImage", x : customer.x-20, y : customer.y-20, img : "person.png"});
+            }
         }
         //drink location
         draws.push({type:"drawCircle", x : g.drink_location[0],y :g.drink_location[1], r:3, fill:true, color:'red'})

@@ -46,6 +46,8 @@ export class game implements game_interface {
     limit : number; 
     time = 0;
     served = 0; 
+    player_speed = 10;
+    skip_customers = 0; 
     constructor(x : number,y : number,target_x : number,target_y : number, limit : number){
         this.x=x;
         this.y=y;
@@ -55,7 +57,7 @@ export class game implements game_interface {
     }
     tick(){
         this.time++; 
-        [this.x, this.y]=moveTo([this.x,this.y], [this.target_x,this.target_y], 10); 
+        [this.x, this.y]=moveTo([this.x,this.y], [this.target_x,this.target_y], this.player_speed); 
         let events : string[] = []; 
         //get drink
         if(!this.has_drink && dist([this.x,this.y], this.drink_location) < 50){
@@ -64,7 +66,11 @@ export class game implements game_interface {
         }
         // randomly spawn customers on left side
         if(this.time % this.serve_delay == 0){
-            this.customers.push(new customer(Math.random() * 200+100, Math.random() * 600, this.time))
+            if(this.skip_customers > 0){
+                this.skip_customers -= 1; 
+            } else { 
+                this.customers.push(new customer(Math.random() * 200+100, Math.random() * 600, this.time))
+            }
         }
         // if close to customer and has drink, get rid of drink
         if(this.has_drink){
@@ -97,7 +103,7 @@ export class game implements game_interface {
             if(!helper.has_drink && dist([helper.x, helper.y], this.drink_location) < 10){
                 helper.has_drink = true;
             }
-            if(helper.has_drink && helper.target && dist([helper.x, helper.y], [helper.target.x, helper.target.y]) < 10 ){
+            if(helper.has_drink && helper.target && helper.target.active && dist([helper.x, helper.y], [helper.target.x, helper.target.y]) < 10 ){
                 events.push("helper served customer");
                 helper.has_drink = false; 
                 helper.target.active = false;          
@@ -105,7 +111,14 @@ export class game implements game_interface {
             } 
             // move towards target
             [helper.x, helper.y] = moveTo([helper.x, helper.y], target, helper.speed); 
-
+        }
+        // customer waited for too long
+        for(let c of this.customers){
+            let waiting_time = this.time - c.t;
+            if(waiting_time > 150){
+                c.active = false; 
+                this.skip_customers ++; 
+            }
         }
         this.customers = this.customers.filter(c => c.active ); 
         return events; 
