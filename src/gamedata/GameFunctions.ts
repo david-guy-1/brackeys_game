@@ -44,13 +44,23 @@ let orig_disp = ` {"canvas" : [["topleft", [0, 0, 50, 50]], ["display",[ 50, 10,
             draws.push({type:"drawImage", x : g.x-20, y : g.y-20, img : "drink.png"});
         }
         //customers
+        console.log(g.customers.map(x => g.time - x.t));
         for(let customer of g.customers){
+            // determine image to draw
+            let image = "customer1.png";
+            if(customer.walking){
+                if((g.time - customer.t )%10 < 5){
+                    image = "customer3.png"; 
+                }
+                else {
+                    image = "customer2.png"; 
+                }
+            }
+            draws.push({type:"drawImage", x : customer.x-20, y : customer.y-40, img :image});
+
             let waiting_time = g.time -  customer.t ;
             if(waiting_time > 50){
-                draws.push({type:"drawImage", x : customer.x-20, y : customer.y-20, img : "person_sad.png"});
-            }
-            else { 
-                draws.push({type:"drawImage", x : customer.x-20, y : customer.y-20, img : "person.png"});
+                draws.push({type:"drawImage", x : customer.x-5, y : customer.y-50, img :"person_sad.png"});   
             }
         }
         //drink location

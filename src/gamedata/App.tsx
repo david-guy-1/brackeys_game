@@ -242,7 +242,7 @@ function make_upgrade(name : string){
                     [...available_upgrades].map(function(upgrade){
                       let [x,y] = upgrade_costs[upgrade]; 
 
-                      return <>{upgrade} : Cost ${x}, {y} wood. <button onClick={function(this:string){make_upgrade(this) ? setMessage(this + " : upgrade gotten") : setMessage("not enough money and/or wood")}.bind(upgrade)}>Get</button><br /></>
+                      return <div key={upgrade}>{upgrade} : Cost ${x}, {y} wood. <button onClick={function(this:string){make_upgrade(this) ? setMessage(this + " : upgrade gotten") : setMessage("not enough money and/or wood")}.bind(upgrade)}>Get</button><br /></div>
                     } )
                   }
                   <br /><button onClick={() => setCount("win")}>Continue</button><br />

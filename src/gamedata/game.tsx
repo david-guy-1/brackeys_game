@@ -7,12 +7,17 @@ type point = [number, number]
 class customer {
     x:number;
     y:number;
-    t : number
+    tx : number;
+    ty : number;
+    t : number;
     active : boolean = true; 
-    constructor(x : number,y : number,t : number){
+    walking : boolean = true; 
+    constructor(x : number,y : number, tx : number, ty : number,t : number){
         this.x=x;
         this.y=y;
         this.t = t; 
+        this.tx = tx;
+        this.ty = ty; 
     }
     
 }
@@ -69,7 +74,14 @@ export class game implements game_interface {
             if(this.skip_customers > 0){
                 this.skip_customers -= 1; 
             } else { 
-                this.customers.push(new customer(Math.random() * 200+100, Math.random() * 600, this.time))
+                this.customers.push(new customer( Math.random() * 600, 600,  Math.random() * 600, Math.random() * 150+400, this.time))
+            }
+        }
+        // move customers
+        for(let c of this.customers){
+            [c.x, c.y]  = moveTo([c.x, c.y], [c.tx, c.ty], 3); 
+            if(dist([c.x, c.y], [c.tx, c.ty]) < 5){
+                c.walking = false; 
             }
         }
         // if close to customer and has drink, get rid of drink
