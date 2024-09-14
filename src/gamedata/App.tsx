@@ -20,7 +20,7 @@ let level = 0;
 let day_limit = 10; 
 let upgrades : Record<string, boolean> = {}; 
 let res_count = 0; //amount of wood
-let money =1110; // amount of money; 
+let money =0; // amount of money; 
 
 // plans
 let helpers = 0;
@@ -28,8 +28,8 @@ let cost_per_drink = 0;
 let screen_trans = true; 
 
 
-let serve_duration = 1200;
-let collect_duration = 1200; 
+let serve_duration = 500;
+let collect_duration = 250; 
 
 let mode = "plan"
 function App() {
@@ -75,9 +75,9 @@ function App() {
 
   function compute_serve_delay(upgrades : Record<string, boolean>, price : number, level : number){
     // smaller is better
-    let base =  10 + 1*level;
+    let base =  10 - 0.8*level;
     if(upgrades["more advertising"]){
-      base -= 10; 
+      base *= 0.8; 
     }
     let price_factor = Math.pow(2, price/5) ;
     if(price_factor < 1){
@@ -123,9 +123,9 @@ function compute_helper_count(upgrades : Record<string, boolean>){
 }
 
 function compute_helper_speed(upgrades : Record<string, boolean>){
-  let x = 5;
+  let x = 6;
   if(upgrades["faster helpers"]){
-    x += 5; 
+    x += 4; 
   }
   return x;
 }
@@ -200,7 +200,7 @@ function make_upgrade(name : string){
                 let helpers_limit = compute_helper_count(upgrades); 
                   return <>
                   ${money} , {res_count} wood<br />
-                    <input type="text" onChange={display_cost} id="helper count" defaultValue={1}/>Number of helpers (limit {helpers_limit}) <br />
+                    <input type="text" onChange={display_cost} id="helper count" defaultValue={compute_helper_count(upgrades)}/>Number of helpers (limit {helpers_limit}) <br />
 
                     <input type="text" onChange={display_cost}id="cost" defaultValue={10}/>Cost per drink (max 30)<br />
                     <button onClick={start_clicked}> Start</button>
