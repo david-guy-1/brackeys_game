@@ -115,7 +115,7 @@ export class game implements game_interface {
         // customer waited for too long
         for(let c of this.customers){
             let waiting_time = this.time - c.t;
-            if(waiting_time > 150){
+            if(waiting_time > 200){
                 c.active = false; 
                 this.skip_customers ++; 
             }

@@ -24,7 +24,6 @@ let money =1110; // amount of money;
 
 // plans
 let helpers = 0;
-let helper_speed = 0;
 let cost_per_drink = 0;
 let screen_trans = true; 
 
@@ -44,7 +43,7 @@ function App() {
 
   
   function check_cost() : string | [number, number]{
-    let ids : string[] = ["helper count", "helper speed", "cost"];
+    let ids : string[] = ["helper count", "cost"];
     let vals : number[] = []; 
     for(let item of ids){
       if(document.getElementById(item) == null ){
@@ -60,20 +59,23 @@ function App() {
       vals.push(v); 
     }
     //cost per drink limit
-    if(vals[2] > 30){
+    if(vals[1] > 30){
       return "cost per drink is limited at 30"; 
     }
-    [helpers, helper_speed, cost_per_drink]  = vals; 
+    if(vals[0] > compute_helper_count(upgrades)){
+      return "Too many helpers"
+    }
+    [helpers, cost_per_drink]  = vals; 
     // charge money for helpers 
-    let helper_cost = compute_helper_cost(helpers, helper_speed, upgrades, level); 
+    let helper_cost = compute_helper_cost(helpers, upgrades, level); 
     
-    return [Math.round(helper_cost), compute_serve_delay(upgrades, vals[2], level ) ]; 
+    return [Math.round(helper_cost), compute_serve_delay(upgrades, vals[1], level ) ]; 
   
   }
 
   function compute_serve_delay(upgrades : Record<string, boolean>, price : number, level : number){
     // smaller is better
-    let base =  30 + 2*level;
+    let base =  10 + 1*level;
     if(upgrades["more advertising"]){
       base -= 10; 
     }
@@ -83,8 +85,8 @@ function App() {
     }
     return Math.floor(base*price_factor);
   }
-  function compute_helper_cost(helpers : number,  speed : number , upgrades : Record<string, boolean> , level : number){
-    let cost = 10 + speed/10;
+  function compute_helper_cost(helpers : number, upgrades : Record<string, boolean> , level : number){
+    let cost = 10 ;
     if(upgrades["cheaper helpers"]){
         cost -= 1;   
     }
@@ -112,6 +114,22 @@ function compute_wolves_count(upgrades : Record<string, boolean>, level : number
   return x;
 }
 
+function compute_helper_count(upgrades : Record<string, boolean>){
+  let x = 0;
+  if(upgrades["extra helper"]){
+    x++;
+  }
+  return x;
+}
+
+function compute_helper_speed(upgrades : Record<string, boolean>){
+  let x = 5;
+  if(upgrades["faster helpers"]){
+    x += 5; 
+  }
+  return x;
+}
+
 function make_upgrade(name : string){
   let [x,y] = upgrade_costs[name];
   if(money < x || res_count < y){
@@ -122,6 +140,7 @@ function make_upgrade(name : string){
   upgrades[name] = true;
   return true;
 }
+
 
   return (
     <>
@@ -134,6 +153,7 @@ function make_upgrade(name : string){
                   g.limit = serve_duration; 
                   g.serve_delay = compute_serve_delay(upgrades, cost_per_drink,level );
                   console.log(g.serve_delay);
+                  let helper_speed = compute_helper_speed(upgrades); 
                   for(let i=0; i < helpers; i++){
                     g.helpers.push(new helper(400, 400, helper_speed));
                   }
@@ -155,7 +175,6 @@ function make_upgrade(name : string){
                 function display_cost(){
                   console.log("got here");
                   let data = check_cost();
-                  
                   if(typeof(data) == "string"){
                     // do nothing
                     setMessage(data);
@@ -178,10 +197,11 @@ function make_upgrade(name : string){
                 if(message == ""){
                   setTimeout(display_cost, 10);
                 }
+                let helpers_limit = compute_helper_count(upgrades); 
                   return <>
                   ${money} , {res_count} wood<br />
-                    <input type="text" onChange={display_cost} id="helper count" defaultValue={1}/>Number of helpers<br />
-                    <input type="text" onChange={display_cost}id="helper speed" defaultValue={10}/>Helper speed<br />
+                    <input type="text" onChange={display_cost} id="helper count" defaultValue={1}/>Number of helpers (limit {helpers_limit}) <br />
+
                     <input type="text" onChange={display_cost}id="cost" defaultValue={10}/>Cost per drink (max 30)<br />
                     <button onClick={start_clicked}> Start</button>
                     {message}
