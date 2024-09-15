@@ -31,7 +31,7 @@ let screen_trans = true;
 let serve_duration = 500;
 let collect_duration = 250; 
 
-let mode = "plan"
+let mode = "intro"
 function App() {
   
   const [count, setCount] = useState<string>(mode)
@@ -146,6 +146,11 @@ function make_upgrade(name : string){
     <>
           {function(){ 
             switch(count){
+			  case "intro":
+				return <><a href="https://github.com/Godmark54"> Godmark54 : Art </a><br />
+				<a href="https://tdgperson.itch.io/"> TDGperson : programming </a> <br /> 
+				<img src="bssets/Start Button.png" onClick={() => {mode = "plan"; setCount("plan");}} />
+				</>
               case "game":
                 
                 if(g == undefined){
@@ -279,13 +284,13 @@ function make_upgrade(name : string){
                   
                 }
                 setTimeout(() => {setMessage(""); setCount(mode); screen_trans = true; }, 1000);
-                return <>{day_limit-level} days until the storm comes <br /> {{"collect" : "Time to get resources" ,"game": "Time to serve customers","plan":"time to plan", "upgrade":"time to get upgrades"}[mode]}<br />{message}</>; 
+                return <><img src="bssets/Cloud collection'.png" /><br />{day_limit-level} days until the storm comes <br /> {{"collect" : "Time to get resources" ,"game": "Time to serve customers","plan":"time to plan", "upgrade":"time to get upgrades"}[mode]}<br />{message}</>; 
 
                 case "storm":
                   if(upgrades["survive storm"]){
-                    return <>You survived the storm</>
+                    return <><img src="bssets/Cloud collection'.png" /><br />You survived the storm</>
                   } else {
-                    return <>You did not survive the storm</>
+                    return <><img src="bssets/Cloud collection'.png" /><br />You did not survive the storm</>
                   }
             }
 

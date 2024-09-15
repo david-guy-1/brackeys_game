@@ -37,7 +37,9 @@ let orig_disp = ` {"canvas" : [["topleft", [0, 0, 50, 50]], ["display",[ 50, 10,
  const  draw_fn : draw_fn_type = function(g :game, e : event[], canvas : string = "") {
     let draws : draw_command[] = [];
     if(canvas == "display"){
+        draws.push({type:"drawImage", "x":0, "y":0, "img" : "bssets/tileSet.png"})
         //player
+    
         draws.push({type:"drawImage", x : g.x-20, y : g.y-20, img : "player.png"});
         // res
         for(let res of g.valid_res()){
